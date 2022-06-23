@@ -190,5 +190,5 @@ $$$$$$$$\ $$$$$$$$\ $$ | \_/ $$ |$$$$$$$  |$$$$$$$$\       $$ | \$$ |\$$$$$$  |$
                 break
             
 
-            
-bot.run('')
+#remember to replace 'TOKEN' with your own bot token
+bot.run('TOKEN')
